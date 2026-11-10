@@ -1,4 +1,6 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
+import { resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { z } from 'zod';
 import { config } from '../main/config';
 import { logger } from '../main/logger';
@@ -9,7 +11,10 @@ function trusted(e: IpcMainInvokeEvent): boolean {
   if (!rawUrl) return false;
   try {
     const sender = new URL(rawUrl);
-    if (sender.protocol === 'file:') return true;
+    if (sender.protocol === 'file:') {
+      const expectedFile = resolve(__dirname, '../../dist/index.html');
+      return fileURLToPath(sender.href) === expectedFile;
+    }
     return config.APP_ENV === 'development' && sender.origin === 'http://localhost:5173';
   } catch {
     return false;
