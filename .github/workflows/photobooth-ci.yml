@@ -27,3 +27,7 @@ jobs:
         run: npm test -- --passWithNoTests
       - name: Build application
         run: npm run build
+      - name: Validate dashboard JavaScript
+        run: node --check ../dashboard/app.js
+      - name: Validate dashboard config
+        run: node --check ../dashboard/config.js
