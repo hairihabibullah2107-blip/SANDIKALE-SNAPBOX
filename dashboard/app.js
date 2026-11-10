@@ -1,26 +1,36 @@
 (() => {
+  "use strict";
   const config = window.SNAPBOX_CONFIG || {};
   const $ = (id) => document.getElementById(id);
   const loginPanel = $("login-panel");
   const dashboardPanel = $("dashboard-panel");
   const message = $("login-message");
-  const setMessage = (text, kind = "") => { message.textContent = text; message.className = "message " + kind; };
+  const setMessage = (value, kind = "") => { if (message) { message.textContent = value; message.className = "message " + kind; } };
   const validConfig = /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(config.supabaseUrl || "") && (config.supabaseAnonKey || "").length > 20;
   let accessToken = sessionStorage.getItem("snapbox_access_token") || "";
-  const showDashboard = (email) => {
+  let demoMode = false;
+  const showDashboard = (email, demo = false) => {
+    demoMode = demo;
     loginPanel.classList.add("hidden");
     dashboardPanel.classList.remove("hidden");
-    $("account-label").textContent = email || "Akun terautentikasi";
+    $("account-label").textContent = demo ? "Pratinjau Demo" : (email || "Akun terautentikasi");
     $("logout").classList.remove("hidden");
-    $("connection-label").textContent = "AUTHENTICATED";
+    $("logout").textContent = demo ? "Keluar Demo" : "Keluar";
+    $("connection-label").textContent = demo ? "MODE DEMO — OFFLINE" : "AUTHENTICATED";
     $("today").textContent = new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(new Date());
+    const notice = dashboardPanel.querySelector(".notice");
+    if (notice && demo) {
+      notice.querySelector("b").textContent = "MODE DEMO";
+      notice.querySelector("span").textContent = "Anda sedang melihat pratinjau antarmuka. Belum ada database, perangkat, sesi foto, atau pekerjaan cetak yang dijalankan.";
+    }
   };
   const showLogin = () => {
+    demoMode = false;
     loginPanel.classList.remove("hidden");
     dashboardPanel.classList.add("hidden");
     $("account-label").textContent = "Belum login";
     $("logout").classList.add("hidden");
-    $("connection-label").textContent = "BELUM TERHUBUNG";
+    $("connection-label").textContent = validConfig ? "SIAP LOGIN" : "MODE PRATINJAU";
   };
   async function request(path, options = {}) {
     const response = await fetch(config.supabaseUrl + path, {
@@ -31,10 +41,15 @@
     if (!response.ok) throw new Error(data.msg || data.message || data.error_description || "Permintaan gagal (" + response.status + ")");
     return data;
   }
+  $("demo-access").addEventListener("click", () => {
+    sessionStorage.removeItem("snapbox_access_token");
+    accessToken = "";
+    showDashboard("Pratinjau Demo", true);
+  });
   $("login-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!validConfig) {
-      setMessage("Supabase belum dikonfigurasi. Isi dashboard/config.js dengan Project URL dan anon/publishable key.", "error");
+      setMessage("Login akun belum diaktifkan. Gunakan tombol LIHAT SISTEM (MODE DEMO) untuk meninjau dashboard.", "error");
       return;
     }
     const button = event.currentTarget.querySelector("button");
@@ -48,7 +63,7 @@
       if (!session.access_token) throw new Error("Token login tidak diterima.");
       accessToken = session.access_token;
       sessionStorage.setItem("snapbox_access_token", accessToken);
-      showDashboard(session.user?.email);
+      showDashboard(session.user?.email, false);
     } catch (error) {
       setMessage(error.message || "Login gagal.", "error");
     } finally {
@@ -60,11 +75,12 @@
     accessToken = "";
     showLogin();
   });
-  if (!validConfig) setMessage("Dashboard belum terhubung ke Supabase. Konfigurasi URL dan anon key diperlukan.", "error");
-  else if (accessToken) {
+  if (validConfig && accessToken) {
     request("/auth/v1/user", { headers: { Authorization: "Bearer " + accessToken } })
-      .then((user) => showDashboard(user.email))
+      .then((user) => showDashboard(user.email, false))
       .catch(() => { sessionStorage.removeItem("snapbox_access_token"); showLogin(); });
+  } else {
+    showLogin();
+    if (!validConfig) setMessage("Login akun belum diaktifkan. Masuk melalui mode demo untuk melihat sistem.", "error");
   }
-  if (!validConfig || !accessToken) showLogin();
 })();
