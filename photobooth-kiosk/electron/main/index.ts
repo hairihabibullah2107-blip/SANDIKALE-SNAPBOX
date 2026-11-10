@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
-import { join } from 'path';
+import { join, resolve } from 'path';
+import { pathToFileURL } from 'url';
 import { config } from './config';
 import { logger } from './logger';
 import { registerIpc } from '../ipc';
@@ -21,8 +22,14 @@ function createWindow() {
     },
   });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  const appFileUrl = pathToFileURL(resolve(__dirname, '../../dist/index.html')).href;
+  const devOrigin = devUrl ? new URL(devUrl).origin : null;
   win.webContents.on('will-navigate', (e, url) => {
-    if (!url.startsWith('file://') && !(devUrl && url.startsWith(devUrl))) e.preventDefault();
+    let allowed = url === appFileUrl;
+    if (devOrigin && config.APP_ENV === 'development') {
+      try { allowed = allowed || new URL(url).origin === devOrigin; } catch { /* reject malformed URL */ }
+    }
+    if (!allowed) e.preventDefault();
   });
   win.webContents.on('render-process-gone', (_e, d) => logger.error('renderer crash', d));
   if (devUrl) win.loadURL(devUrl); else win.loadFile(join(__dirname, '../../dist/index.html'));

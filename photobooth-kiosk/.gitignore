@@ -1,0 +1,14 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output
+node_modules/
+dist/
+dist-electron/
+release/
+
+# Logs and local files
+*.log
+.DS_Store

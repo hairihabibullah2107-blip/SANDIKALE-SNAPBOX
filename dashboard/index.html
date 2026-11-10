@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11110f">
+  <meta name="description" content="SANDIKALE SNAPBOX — dashboard monitoring photobooth.">
+  <title>SANDIKALE SNAPBOX — Dashboard</title>
+  <link rel="stylesheet" href="./app.css">
+  <script src="./config.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="#"><span class="mark">S</span><span>SANDIKALE<small>SNAPBOX CONTROL</small></span></a>
+      <div class="side-label">WORKSPACE</div>
+      <nav><a class="nav-link active" href="#overview">◫ <span>Ringkasan</span></a><a class="nav-link" href="#devices">▣ <span>Perangkat</span></a><a class="nav-link" href="#sessions">▤ <span>Sesi Foto</span></a><a class="nav-link" href="#frames">▧ <span>Preset Frame</span></a></nav>
+      <div class="side-bottom"><span class="side-status"></span><span id="connection-label">BELUM TERHUBUNG</span></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><div class="eyebrow">PHOTObooth MANAGEMENT</div><h1>Dashboard</h1></div><div class="account"><span class="avatar">S</span><span id="account-label">Belum login</span><button id="logout" class="ghost hidden">Keluar</button></div></header>
+      <section id="login-panel" class="login-wrap">
+        <div class="login-card"><div class="eyebrow red">SECURE ACCESS</div><h2>Masuk ke SNAPBOX</h2><p>Dashboard ini hanya untuk pengguna yang memiliki akun Supabase terdaftar.</p>
+          <form id="login-form"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin@email.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Masukkan password"></label><button class="primary" type="submit">MASUK <span>↗</span></button><p id="login-message" class="message" role="status"></p></form>
+          <div class="security-note">Koneksi Supabase menggunakan anon/publishable key. Hak akses data tetap wajib dibatasi melalui RLS.</div>
+        </div>
+      </section>
+      <section id="dashboard-panel" class="hidden">
+        <div class="welcome"><div><div class="eyebrow red">LIVE OPERATIONS</div><h2>Kontrol photobooth dari satu tempat.</h2><p>Status perangkat akan tampil setelah Kiosk Agent dan tabel sinkronisasi diaktifkan.</p></div><span class="date-chip" id="today"></span></div>
+        <div class="notice"><b>MODE FONDASI</b><span>Login Supabase tersedia setelah konfigurasi. Data perangkat, sesi, dan cetak belum dihubungkan ke database — tidak ada angka simulasi yang ditampilkan sebagai data nyata.</span></div>
+        <div class="section-head" id="overview"><div><div class="eyebrow">SYSTEM OVERVIEW</div><h3>Status sistem</h3></div><span class="muted">Diperbarui saat koneksi tersedia</span></div>
+        <div class="stat-grid">
+          <article class="stat-card"><span class="stat-icon">▣</span><small>KIOSK PC</small><strong class="pending">Belum terhubung</strong><span>Menunggu heartbeat agent</span></article>
+          <article class="stat-card"><span class="stat-icon">◉</span><small>KAMERA NIKON P1000</small><strong class="pending">Belum diuji</strong><span>Kontrol shutter & transfer foto</span></article>
+          <article class="stat-card"><span class="stat-icon">▤</span><small>PRINTER</small><strong class="pending">Belum tersinkron</strong><span>Deteksi lokal di komputer kiosk</span></article>
+          <article class="stat-card"><span class="stat-icon">↥</span><small>GOOGLE DRIVE</small><strong class="pending">Belum dikonfigurasi</strong><span>Retensi file 24 jam</span></article>
+        </div>
+        <div class="content-grid">
+          <article class="panel" id="devices"><div class="panel-head"><div><div class="eyebrow">DEVICE MONITOR</div><h3>Perangkat aktif</h3></div><span class="pill neutral">0 ONLINE</span></div><div class="empty"><span>▣</span><b>Belum ada kiosk terdaftar</b><p>Hubungkan komputer kiosk setelah Kiosk Agent dan autentikasi perangkat selesai dibuat.</p></div></article>
+          <article class="panel" id="sessions"><div class="panel-head"><div><div class="eyebrow">PHOTO SESSIONS</div><h3>Aktivitas sesi</h3></div><span class="pill neutral">MENUNGGU DATA</span></div><div class="empty"><span>▤</span><b>Belum ada data sesi</b><p>Riwayat sesi akan muncul setelah skema database dan alur capture aktif.</p></div></article>
+        </div>
+        <article class="panel frame-panel" id="frames"><div class="panel-head"><div><div class="eyebrow">FRAME LIBRARY</div><h3>Preset frame</h3></div><span class="pill neutral">BELUM AKTIF</span></div><p class="muted">Katalog preset akan dikelola dari dashboard setelah format frame dan compositor ditetapkan.</p></article>
+      </section>
+      <footer> SANDIKALE SNAPBOX <span>·</span> MULTI-DEVICE CONTROL PANEL <span class="footer-right">BUILD FOUNDATION 0.1</span></footer>
+    </main>
+  </div>
+</body>
+</html>

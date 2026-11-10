@@ -19,7 +19,7 @@ if (!parsed.success) {
 
 export const config = parsed.data;
 
-if (config.APP_ENV === 'production' && config.ADMIN_PIN === '0000') {
-  console.error('ADMIN_PIN default tidak boleh dipakai di production.');
+if (config.APP_ENV === 'production' && ['0000', 'change-this-pin'].includes(config.ADMIN_PIN)) {
+  console.error('ADMIN_PIN default/placeholder tidak boleh dipakai di production.');
   process.exit(1);
 }
