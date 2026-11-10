@@ -1,19 +1,54 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type DbState = { ok: boolean; detail: string } | null;
+type Printer = {
+  name: string;
+  displayName: string;
+  description: string;
+  isDefault: boolean;
+  status: number;
+};
 
 export default function App() {
   const [info, setInfo] = useState('Menghubungkan perangkat...');
   const [db, setDb] = useState<DbState>(null);
+  const [printers, setPrinters] = useState<Printer[]>([]);
+  const [printerState, setPrinterState] = useState<'checking' | 'ready' | 'empty' | 'error'>('checking');
+
+  const refreshPrinters = useCallback(async () => {
+    if (!window.kiosk?.listPrinters) {
+      setPrinterState('error');
+      return;
+    }
+    setPrinterState('checking');
+    try {
+      const found = await window.kiosk.listPrinters();
+      setPrinters(found);
+      setPrinterState(found.length ? 'ready' : 'empty');
+    } catch {
+      setPrinters([]);
+      setPrinterState('error');
+    }
+  }, []);
 
   useEffect(() => {
-    window.kiosk.ping('sindikale-photobooth')
+    if (!window.kiosk) {
+      setInfo('Jalankan melalui aplikasi desktop untuk mengakses perangkat');
+      setDb({ ok: false, detail: 'IPC desktop tidak tersedia' });
+      setPrinterState('error');
+      return;
+    }
+
+    window.kiosk.ping('sindikale-snapbox')
       .then((r) => window.kiosk.info().then((i) => setInfo(`${r.pong} · ${i.env} v${i.version}`)))
       .catch(() => setInfo('Perangkat belum terhubung'));
+
     window.kiosk.dbHealth()
       .then(setDb)
       .catch(() => setDb({ ok: false, detail: 'Koneksi belum tersedia' }));
-  }, []);
+
+    void refreshPrinters();
+  }, [refreshPrinters]);
 
   return (
     <main className="kiosk-shell">
@@ -74,6 +109,30 @@ export default function App() {
           </div>
           <div className="stage-bottom"><span>CREATE</span><i /> <span>POSE</span><i /> <span>REMEMBER</span></div>
         </div>
+      </section>
+
+      <section className="hardware-panel" aria-label="Status perangkat">
+        <div className="hardware-heading">
+          <div><span className="panel-kicker">KIOSK HARDWARE</span><h2>PRINTER DETECTION</h2></div>
+          <button className="refresh-button" onClick={() => void refreshPrinters()} disabled={printerState === 'checking'}>
+            {printerState === 'checking' ? 'MEMERIKSA...' : 'REFRESH PRINTER'}
+          </button>
+        </div>
+        {printerState === 'ready' && (
+          <ul className="printer-list">
+            {printers.map((printer) => (
+              <li key={printer.name}>
+                <span className="printer-indicator" />
+                <span className="printer-name">{printer.displayName || printer.name}</span>
+                {printer.isDefault && <span className="printer-default">DEFAULT</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+        {printerState === 'empty' && <p className="hardware-message">Belum ada printer terdeteksi. Pasang printer dan pastikan driver sudah terinstal pada komputer kiosk.</p>}
+        {printerState === 'error' && <p className="hardware-message">Deteksi printer hanya tersedia pada aplikasi desktop Electron.</p>}
+        {printerState === 'checking' && <p className="hardware-message">Memeriksa printer yang dikenali sistem operasi...</p>}
+        <p className="hardware-note">Deteksi perangkat belum mengirim perintah cetak. Pengiriman cetak akan diaktifkan setelah antrean dan pengaman anti-duplikasi selesai diuji.</p>
       </section>
 
       <footer className="footer">
