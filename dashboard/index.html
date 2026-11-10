@@ -23,7 +23,7 @@
       <section id="login-panel" class="login-wrap">
         <div class="login-card"><div class="eyebrow red">SECURE ACCESS</div><h2>Masuk ke SNAPBOX</h2><p>Dashboard ini hanya untuk pengguna yang memiliki akun Supabase terdaftar.</p>
           <form id="login-form"><label>Email<input id="email" type="email" autocomplete="username" required placeholder="admin@email.com"></label><label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Masukkan password"></label><button class="primary" type="submit">MASUK <span>↗</span></button><p id="login-message" class="message" role="status"></p></form>
-          <div class="security-note">Koneksi Supabase menggunakan anon/publishable key. Hak akses data tetap wajib dibatasi melalui RLS.</div>
+          <div class="preview-divider"><span>ATAU</span></div><button id="demo-access" class="demo-button" type="button">LIHAT SISTEM (MODE DEMO) <span>→</span></button><p class="demo-caption">Mode demo hanya untuk melihat antarmuka. Tidak memerlukan database atau akun dan tidak menyimpan transaksi.</p><div class="security-note">Login akun asli akan diaktifkan setelah backend disiapkan. Untuk sekarang, Anda dapat meninjau tampilan sistem melalui mode demo.</div>
         </div>
       </section>
       <section id="dashboard-panel" class="hidden">
