@@ -78,8 +78,9 @@ Setiap tahap harus lulus typecheck, test, build, dan uji perangkat yang relevan 
 Jangan mengasumsikan P1000 kompatibel dengan Nikon NX Tether. Daftar kompatibilitas NX Tether resmi yang diperiksa saat penyusunan ini tidak mencantumkan P1000. P1000 tercantum dalam daftar kamera SnapBridge yang mendukung remote still photography melalui perangkat pintar yang kompatibel. Spesifikasi P1000 mencantumkan USB dengan protokol MTP/PTP dan HDMI micro.
 
 Implikasi implementasi:
-- Jangan membuat integrasi NX Tether untuk P1000 tanpa uji kompatibilitas nyata.
-- Jalur awal yang perlu diuji adalah pemicu shutter melalui remote/SnapBridge dan transfer foto melalui USB MTP/PTP.
+- Jangan membuat integrasi NX Tether untuk P1000 tanpa uji kompatibilitas nyata; daftar kompatibilitas Nikon yang diperiksa tidak mencantumkan P1000.
+- Daftar gPhoto/libgphoto2 menyebut P1000 pada jalur PTP untuk dukungan kamera, tetapi tabel remote-control terpisah tidak mencantumkan P1000. Karena itu transfer file dan remote shutter harus diuji sebagai dua kemampuan yang berbeda.
+- Jalur awal yang perlu diuji adalah pemicu shutter melalui SnapBridge/remote yang kompatibel dan transfer foto melalui USB MTP/PTP.
 - HDMI capture card dapat dipertimbangkan untuk live preview, tetapi bukan pengganti mekanisme shutter.
 - Adapter kamera baru boleh dinyatakan siap setelah uji capture berulang, deteksi file baru, dan pemulihan koneksi di PC kiosk.
 
@@ -87,3 +88,5 @@ Referensi resmi:
 - [Nikon NX Tether — daftar kamera kompatibel](https://www.nikonusa.com/content/nx-tether)
 - [Nikon SnapBridge — daftar kamera kompatibel termasuk COOLPIX P1000](https://nikonimglib.com/snbr/onlinehelp/en/compatible_cameras_44.html)
 - [Nikon COOLPIX P1000 — spesifikasi antarmuka USB/HDMI](https://www.nikonusa.com/p/coolpix-p1000/26522/overview)
+- [gPhoto — dukungan kamera PTP](https://gphoto.sourceforge.io/proj/libgphoto2/support.php)
+- [gPhoto — daftar kemampuan remote control](https://gphoto.sourceforge.io/doc/remote/)
